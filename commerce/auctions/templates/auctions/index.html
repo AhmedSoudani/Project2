@@ -1,0 +1,23 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Active Listings</h2>
+    <div class="listing-container">
+    {% for listing in listings %}
+        <div>
+            <div class="listing-item">
+                {% if listing.image_URL %}
+                    <img src="{{listing.image_URL}}" alt="{{listing.title}}" class="img">
+                {% else %}
+                    No images for this Product !
+                {% endif %}
+                <div class="listing-details">
+                    <h4>{{ listing.title }}</h4>
+                    <h5>Price: {{ listing.price }}$</h5>
+                    <a href="auctions/layout.html" class="btn btn-primary">BID NOW!</a>
+                </div>
+            </div>
+        </div>
+       
+    {% endfor %}
+{% endblock %}
