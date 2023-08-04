@@ -5,6 +5,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=20, unique=True, null=False)
     email = models.EmailField(unique=True, null=False)
     password = models.CharField(max_length=128, null=False)
+    watchlist = models.ManyToManyField('listing', blank=True, related_name="watched_by")
 
     def __str__(self) :
         return f"Username:{self.username}, email:{self.email}"

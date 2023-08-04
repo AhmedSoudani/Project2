@@ -75,8 +75,17 @@ def create(request):
             form.save()
 
             return HttpResponseRedirect(reverse('index'))
-        else :
-            form = listingform
+    else :
+        form = listingform
+   
+    return render(request, 'auctions/create.html', {"form": form})
 
-        return render(request, 'auctions/create.html', {"form": form})
-
+@login_required
+def watchlist(request, listing_id):
+    user = request.user
+    listing_obj = listing.objects.get(id=listing_id)
+    if listing_obj in user.watchlist.all():
+        user.watchlist.remove(listing_obj)
+    else:
+        user.watchlist.add(listing_obj)
+    return HttpResponseRedirect(reverse('index'))
