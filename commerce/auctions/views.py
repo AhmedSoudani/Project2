@@ -4,9 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .forms import listingform
+from .forms import listingform, BidForm
 
-from .models import User, listing
+from .models import User, listing, bids
 
 
 def index(request):
@@ -72,7 +72,9 @@ def create(request):
     if request.method == 'POST':
         form = listingform(request.POST)
         if form.is_valid():
-            form.save()
+            new_listing = form.save(commit=False)
+            new_listing.creator = request.user
+            new_listing.save()
 
             return HttpResponseRedirect(reverse('index'))
     else :
@@ -88,4 +90,50 @@ def watchlist(request, listing_id):
         user.watchlist.remove(listing_obj)
     else:
         user.watchlist.add(listing_obj)
-    return HttpResponseRedirect(reverse('index'))
+    return HttpResponseRedirect(reverse('items', args=[listing_id]))
+
+@login_required
+def showlists(request):
+    user = request.user
+    watchlists = user.watchlist.all()
+    listings = listing.objects.all()
+    return render(request, "auctions/watchlist.html", {
+        "watchlists" : watchlists,
+        "listing" : listings
+    })
+
+def items(request, listing_id):
+    item = listing.objects.get(id=listing_id)
+
+    if request.method == 'POST':
+        bid_form = BidForm(request.POST)
+        if bid_form.is_valid():
+            bid_price = bid_form.cleaned_data['bid_price']
+            if bid_price > item.price:
+                item.price = bid_price
+                item.save()
+                new_bid = bid_form.save(commit=False)
+                new_bid.owner = request.user
+                new_bid.title = item
+                new_bid.save()
+                return render(request, "auctions/item.html", {
+                    "item": item,
+                    "message":"you have been bidded successfully!",
+                    "bid_form":bid_form,
+                    "al": "success"
+                })
+            else:
+                return render(request, "auctions/item.html", {
+                    "item" : item,
+                    "message" : "the bid should be greater than the price!",
+                    "bid_form": bid_form,
+                    "al": "danger"
+                })
+    else:
+        bid_form = BidForm()
+
+    return render(request, "auctions/item.html", {
+        "item": item,
+        "bid_form":bid_form,
+    })
+

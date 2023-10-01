@@ -141,3 +141,57 @@ a:hover {
     margin: 0; /* Remove default margins to ensure alignment */
 }
 
+.wb {
+    display: block;
+    clear: both;
+    justify-content: flex-end;
+    margin-top: 10px;
+    margin-left: 83%;
+    margin-bottom: 60px;
+}
+
+
+.item-container {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px;
+    border: solid 1px #12cfb6;
+}
+
+.item-image {
+    flex: 1;
+    margin-right: 20px;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    margin-left: 20px;
+}
+
+.item-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+.item-details {
+    flex: 2;
+}
+.item-bid {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-bid {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.bid-button {
+    flex: 1;
+}
+footer {
+    
+}
+
+#png {
+    
+}
