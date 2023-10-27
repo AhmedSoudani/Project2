@@ -17,7 +17,7 @@
                 <div class="listing-details">
                     <h4>{{ listing.title }}</h4>
                     <h5>Price: ${{ listing.price }}</h5>
-                    <a href="auctions/layout.html" class="btn btn-primary" style="font-family: sans-serif;">BID NOW!</a>
+                    <a href="{% url 'items' listing.id %}" class="btn btn-primary" style="font-family: sans-serif;">BID NOW!</a>
                 </div>
             </div>
         </div>

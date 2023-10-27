@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import listingform, BidForm
 
-from .models import User, listing, bids
+from .models import User, listing, bids, comments
 
 
 def index(request):
@@ -102,32 +102,44 @@ def showlists(request):
         "listing" : listings
     })
 
+@login_required
 def items(request, listing_id):
     item = listing.objects.get(id=listing_id)
+    cmnts = comments.objects.all()
 
     if request.method == 'POST':
+
+
+
+
         bid_form = BidForm(request.POST)
+
         if bid_form.is_valid():
             bid_price = bid_form.cleaned_data['bid_price']
+
             if bid_price > item.price:
                 item.price = bid_price
                 item.save()
+
                 new_bid = bid_form.save(commit=False)
                 new_bid.owner = request.user
                 new_bid.title = item
                 new_bid.save()
+
                 return render(request, "auctions/item.html", {
                     "item": item,
                     "message":"you have been bidded successfully!",
                     "bid_form":bid_form,
-                    "al": "success"
+                    "al": "success",
+                    "comments": cmnts
                 })
             else:
                 return render(request, "auctions/item.html", {
                     "item" : item,
                     "message" : "the bid should be greater than the price!",
                     "bid_form": bid_form,
-                    "al": "danger"
+                    "al": "danger",
+                    "comments": cmnts
                 })
     else:
         bid_form = BidForm()
@@ -135,5 +147,21 @@ def items(request, listing_id):
     return render(request, "auctions/item.html", {
         "item": item,
         "bid_form":bid_form,
+        "comments": cmnts
     })
 
+@login_required
+def add_comment(request, item_id):
+    if request.method == 'POST':
+        # Get the comment text from the form data
+        comment_text = request.POST.get('comment')
+
+        # Get the item for which the comment is being added
+        id_item = listing.objects.get(pk=item_id)
+
+        # Create a new comment and save it
+        comment = comments(content=comment_text, customer=request.user, item_id=id_item)
+        comment.save()
+
+    # Redirect back to the item's detail page
+    return HttpResponseRedirect(reverse('items', args=[item_id]))

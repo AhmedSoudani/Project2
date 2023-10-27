@@ -46,14 +46,7 @@
             </div>
         </div>
     </div>
-    <div class="comments-sec">
-        <div class="new-comment">
-            <input type="text" placeholder="Enter you comment here..." name="new-comment">
-        </div>
-        <div class="others-comments">
-            
-        </div>
-    </div>
+    
 </body>
 
 {% endblock %}
@@ -61,15 +54,43 @@
 {% load static %}
 
 {% block footer %}
-    <div class="row">
-        <div class="col">
-            <img src="{% static 'auctions/auction.png' %}" alt="Auction Image" id="png">
-            <p>
-                So i think that you liked my product if you wanna contact us we'll leave our data for you
-            </p>
+    <div class="footer">
+        <div class="row">
+            <div class="col">
+                <img id="png" src="{% static 'auctions/auction.png' %}" alt="auction">
+                <p>
+                    So i think that you liked my product if you wanna contact us we'll leave our data for you
+                </p>
+            </div>
+            <div class="col">
+                <h5>Leave your comment here:</h5>
+                <div class="comments-sec">
+                    <div class="new-comment">
+                        <form method="post" action="{% url 'add_comment' item.id %}" onsubmit="reloadPage()">
+                        {% csrf_token %}
+                            <input type="text" placeholder="Enter you comment here..." name="comment">
+                            <button type="submit" class="btn btn-primary">Add+</button>
+                        </form>    
+                    </div>
+                    <div class="others-comments">
+                
+                </div>
+            </div>
+            </div>
+            <div class="col">
+                {% for comment in comments %}
+
+                    {% if comment.item_id.id == item.id %}
+
+                        <div class="comment">
+                            <div class="customer">{{ comment.customer}}:</div>
+                            <div class="content">{{ comment.content }}</div>
+                        </div>
+                    {% endif %}
+                    
+                {% endfor %}   
+            </div>
+            <div class="col"></div>
         </div>
-        <div class="col"></div>
-        <div class="col"></div>
-        <div class="col"></div>
     </div>
 {% endblock %}

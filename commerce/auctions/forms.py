@@ -1,4 +1,4 @@
-from .models import listing, bids
+from .models import listing, bids, comments
 from django import forms
 
 class listingform(forms.ModelForm):

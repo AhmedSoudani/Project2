@@ -10,7 +10,7 @@ class User(AbstractUser):
     watchlist = models.ManyToManyField('listing', blank=True, related_name="watched_by")
 
     def __str__(self) :
-        return f"Username:{self.username}, email:{self.email}"
+        return f"{self.username.capitalize()}"
 
 class listing(models.Model):
     title = models.CharField(max_length=200, blank=False, null=False)
@@ -32,3 +32,10 @@ class bids(models.Model):
     def __str__(self):
         return f"Bid by {self.owner} on '{self.title}' at ${self.bid_price}"
     
+class comments(models.Model):
+    item_id = models.ForeignKey(listing, on_delete=models.CASCADE, related_name="item_id")
+    content = models.TextField(max_length=500, blank=False, null=False)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="customer")
+
+    def __str__(self):
+        return f"Mr {self.customer} has commented to {self.item_id}!"
