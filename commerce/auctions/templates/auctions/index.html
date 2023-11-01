@@ -2,6 +2,15 @@
 
 {% block body %}
     <h2 id="h2">Active Listings</h2>
+    {% if message and request.user != listing.creator%}
+    
+        <div class="news">
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        </div>
+
+    {% endif %}
     <div class="listing-container">
     {% for listing in listings %}
         <div>

@@ -21,6 +21,12 @@
                 {% else %}
                     <a href="{% url 'watchlist' item.id %}" class="btn btn-success">Add to Watchlist</a>
                 {% endif %}
+                {% if item.creator == request.user %}
+                <form method="post" action="{% url 'endbid' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" name="endtask" value="1">END AUCTION!</button>
+                </form>
+                {% endif %}
             </div>
             <div>
                 <h4>{{ item.title }}</h4>

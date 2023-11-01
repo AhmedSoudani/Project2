@@ -13,6 +13,7 @@ class User(AbstractUser):
         return f"{self.username.capitalize()}"
 
 class listing(models.Model):
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator", default=None)
     title = models.CharField(max_length=200, blank=False, null=False)
     description = models.TextField(null=False)
     price = models.DecimalField(decimal_places=2, max_digits=10, null=False)
@@ -20,8 +21,14 @@ class listing(models.Model):
     image_URL = models.URLField(max_length=200, blank=True, null=True)
     winner = models.CharField(max_length=20, blank=True)
 
+    def save(self, *args, **kwargs):
+        if not self.creator:
+            # Set the creator to the currently logged-in user
+            self.creator = User.objects.get(username=self.username)
+        super(listing, self).save(*args, **kwargs)
+
     def __str__(self):
-        return f"Title:{self.title}...Price:{self.price}...Active:{self.isactive}"
+        return f"Title:{self.title} By {self.creator}!"
 
     
 class bids(models.Model):

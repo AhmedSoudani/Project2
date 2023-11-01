@@ -11,10 +11,21 @@ from .models import User, listing, bids, comments
 
 def index(request):
     listings = listing.objects.exclude(isactive=False)
-    return render(request, "auctions/index.html", {
-        "listings": listings
-    })
+    message = None  # Initialize the message as None
 
+    if request.user.is_authenticated:
+        won_bids = bids.objects.filter(owner=request.user, title__isactive=False).order_by('-bid_price')
+        if won_bids.exists():
+            won_listing = won_bids.first().title
+            won_price = won_bids.first().bid_price
+            # Check if the user is not the creator of the listing
+            if won_listing.creator != request.user:
+                message = f"Congratulations! You've won the {won_listing} for ${won_price}"
+
+    return render(request, "auctions/index.html", {
+        "listings": listings,
+        "message": message,
+    })
 
 def login_view(request):
     if request.method == "POST":
@@ -110,8 +121,6 @@ def items(request, listing_id):
     if request.method == 'POST':
 
 
-
-
         bid_form = BidForm(request.POST)
 
         if bid_form.is_valid():
@@ -165,3 +174,17 @@ def add_comment(request, item_id):
 
     # Redirect back to the item's detail page
     return HttpResponseRedirect(reverse('items', args=[item_id]))
+
+
+@login_required
+def endbid(request, item_id):
+    if request.method == 'POST':
+        endtask = request.POST.get('endtask')
+
+        id_item = listing.objects.get(pk=item_id)
+
+        id_item.isactive = False
+        id_item.save()
+
+
+    return HttpResponseRedirect(reverse('index'))
